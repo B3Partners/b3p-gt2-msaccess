@@ -30,7 +30,7 @@ public class MsAccessDataStoreFactory implements FileDataStoreFactorySpi {
     public static final DataStoreFactorySpi.Param PARAM_CONTROLER_COLUMN_TYPE = new Param("controlerColumnType", String.class, "column name in controller tabel that holds table types");  
     public static final DataStoreFactorySpi.Param PARAM_CONTROLER_FILTER = new Param("controlerFilter", String.class, "sql like filter to apply to controler table");  
     public static final DataStoreFactorySpi.Param PARAM_CONTROLER_FILTER_REVERSE = new Param("controlerFilterReverse", Boolean.class, "if true use not like insteadof like");  
-    public static final DataStoreFactorySpi.Param PARAM_EPSG = new Param("epsg", String.class, "EPSG code of projection, e.g. EPSG:28992");  
+    public static final DataStoreFactorySpi.Param PARAM_SRS = new Param("srs", String.class, "EPSG code of projection, e.g. EPSG:28992");  
     public static final DataStoreFactorySpi.Param PARAM_XLABELS = new Param("xlabels", String.class, "comma separated list of column names with x coordinates (one per type)");  
     public static final DataStoreFactorySpi.Param PARAM_YLABELS = new Param("ylabels", String.class, "comma separated list of column names with y coordinates (one per type)");  
     

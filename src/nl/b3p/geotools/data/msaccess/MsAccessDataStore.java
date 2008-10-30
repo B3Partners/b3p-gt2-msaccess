@@ -84,7 +84,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         if (reverse != null && reverse.equalsIgnoreCase("true")) {
             controlerFilterReverse = true;
         }
-        epsg = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_EPSG.key);
+        epsg = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_SRS.key);
         String xlbs = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_XLABELS.key);
         String ylbs = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_YLABELS.key);
         xLabels = xlbs.split(",");

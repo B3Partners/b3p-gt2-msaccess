@@ -67,7 +67,7 @@ public class Client {
         dbconfig.put(MsAccessDataStoreFactory.PARAM_CONTROLER_COLUMN_TYPE.key, p2.getProperty("controlerColumnType", "TABLETYPE"));
         dbconfig.put(MsAccessDataStoreFactory.PARAM_CONTROLER_FILTER.key, p2.getProperty("controlerFilter", "[A-Z]%"));
         dbconfig.put(MsAccessDataStoreFactory.PARAM_CONTROLER_FILTER_REVERSE.key, p2.getProperty("controlerFilterReverse", "false"));
-        dbconfig.put(MsAccessDataStoreFactory.PARAM_EPSG.key, p2.getProperty("epsg", "EPSG:28992"));
+        dbconfig.put(MsAccessDataStoreFactory.PARAM_SRS.key, p2.getProperty("srs", "EPSG:28992"));
         dbconfig.put(MsAccessDataStoreFactory.PARAM_XLABELS.key, p2.getProperty("xlabels", "X_ORDINAAT"));
         dbconfig.put(MsAccessDataStoreFactory.PARAM_YLABELS.key, p2.getProperty("ylabels", "Y_ORDINAAT"));
 
