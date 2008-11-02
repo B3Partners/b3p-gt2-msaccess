@@ -114,16 +114,16 @@ public class MsAccessFeatureReader implements FeatureReader {
                 Class atc = at.getType();
                 try {
                     if (atc == Long.class) {
-                        foa.add(rs.getLong(name));
+                        foa.add(new Long(rs.getLong(name)));
                     } else if (atc == Date.class) {
                         foa.add(rs.getDate(name));
                     } else if (atc == Double.class) {
-                        Double val = rs.getDouble(name);
-                        if (isXLabel) {
-                            x = val;
+                        Double val = new Double(rs.getDouble(name));
+                        if (val!=null && isXLabel) {
+                            x = val.doubleValue();
                         }
-                        if (isYLabel) {
-                            y = val;
+                        if (val!=null && isYLabel) {
+                            y = val.doubleValue();
                         }
                         foa.add(val);
                     } else if (atc == String.class) {
