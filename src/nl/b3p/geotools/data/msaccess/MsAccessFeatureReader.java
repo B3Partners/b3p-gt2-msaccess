@@ -69,7 +69,7 @@ public class MsAccessFeatureReader implements FeatureReader {
             statement = conn.prepareStatement(q);
             rs = statement.executeQuery();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
     }
 
@@ -151,7 +151,7 @@ public class MsAccessFeatureReader implements FeatureReader {
         try {
             return rs.next();
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
     }
 
@@ -164,7 +164,7 @@ public class MsAccessFeatureReader implements FeatureReader {
                 conn.close();
             }
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
 
     }

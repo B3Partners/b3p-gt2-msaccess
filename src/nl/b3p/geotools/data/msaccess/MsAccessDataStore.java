@@ -60,7 +60,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
         } catch (ClassNotFoundException ex) {
             log.error("JdbcOdbcDriver not found!", ex);
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
         String myDB = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=" + msaccessFile;
         Connection conn = null;
@@ -68,7 +68,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             conn = DriverManager.getConnection(myDB, "", "");
         } catch (SQLException ex) {
             log.error("Connection not made!", ex);
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
 
         return conn;
@@ -99,7 +99,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             return SpatialUtil.getLayerArray(controlerTable, controlerColumnName,
                     controlerColumnType, controlerFilter, controlerFilterReverse, dbConn);
         } catch (SQLException ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
     }
 
@@ -117,7 +117,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             featureTypeMap.put(typeName, ft);
             return ft;
         } catch (Exception ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
     }
 
@@ -134,7 +134,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             featureReaderMap.put(typeName, fr);
             return fr;
         } catch (Exception ex) {
-            throw new IOException(ex);
+            throw new IOException(ex.getLocalizedMessage());
         }
     }
 
