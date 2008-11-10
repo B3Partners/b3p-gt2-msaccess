@@ -41,7 +41,8 @@ public class MsAccessDataStore extends AbstractFileDataStore {
     private boolean controlerFilterReverse = false;
     private String epsg = null;
     private String[] xLabels = null;
-    private String[] yLabels = null;;
+    private String[] yLabels = null;
+    ;
     private Map featureReaderMap = new HashMap();
     private Map featureTypeMap = new HashMap();
 
@@ -57,7 +58,13 @@ public class MsAccessDataStore extends AbstractFileDataStore {
     protected static Connection getConnection(URL url) throws IOException {
         String msaccessFile = url.getFile().toLowerCase().substring(1);
         try {
-            Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+            Class.forName("sun.jdbc.odbc.JdbcOdbcDriver").newInstance();
+        } catch (InstantiationException ex) {
+            log.error("JdbcOdbcDriver not found!", ex);
+            throw new IOException(ex.getLocalizedMessage());
+        } catch (IllegalAccessException ex) {
+            log.error("JdbcOdbcDriver not found!", ex);
+            throw new IOException(ex.getLocalizedMessage());
         } catch (ClassNotFoundException ex) {
             log.error("JdbcOdbcDriver not found!", ex);
             throw new IOException(ex.getLocalizedMessage());
@@ -65,11 +72,24 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         String myDB = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=" + msaccessFile;
         Connection conn = null;
         try {
-            conn = DriverManager.getConnection(myDB, "", "");
+            conn = DriverManager.getConnection(myDB, "yuit", "tyuityu");
         } catch (SQLException ex) {
             log.error("Connection not made!", ex);
             throw new IOException(ex.getLocalizedMessage());
         }
+
+//        Properties p = new Properties();
+//        p.put("test", "DRIVER={SQL Server};ServerName=itrackx;UID=defuser;PWD=password");
+//        String sConnect = new String("jdbc:itrackx://192.233.0.3/,");
+//        Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+//        conn = DriverManager.getConnection(sConnect, p);
+        
+        
+//Problem: The account that is being used to access the page does not have access 
+//        to the HKEY_LOCAL_MACHINE\SOFTWARE\ODBC registry key.
+//
+//Solution:
+//http://support.microsoft.com/default.aspx?scid=kb;EN-US;Q295297
 
         return conn;
     }
@@ -112,7 +132,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
             if (dbConn.isClosed()) {
                 dbConn = getConnection();
             }
-            
+
             FeatureType ft = SpatialUtil.createFeatureType(typeName, epsg, dbConn);
             featureTypeMap.put(typeName, ft);
             return ft;
