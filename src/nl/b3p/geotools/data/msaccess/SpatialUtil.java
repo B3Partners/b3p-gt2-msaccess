@@ -6,9 +6,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +37,7 @@ public class SpatialUtil {
         } else if (sqlType == java.sql.Types.DATE ||
                 sqlType == java.sql.Types.TIME ||
                 sqlType == java.sql.Types.TIMESTAMP) {
-            at = AttributeTypeFactory.newAttributeType(label, Date.class);
+            at = AttributeTypeFactory.newAttributeType(label, Timestamp.class);
         } else if (sqlType == java.sql.Types.DECIMAL ||
                 sqlType == java.sql.Types.DOUBLE ||
                 sqlType == java.sql.Types.FLOAT ||

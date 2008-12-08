@@ -11,8 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -115,8 +115,9 @@ public class MsAccessFeatureReader implements FeatureReader {
                 try {
                     if (atc == Long.class) {
                         foa.add(new Long(rs.getLong(name)));
-                    } else if (atc == Date.class) {
-                        foa.add(rs.getDate(name));
+                    } else if (atc == Timestamp.class) {
+                        Timestamp ts = rs.getTimestamp(name);
+                        foa.add(ts);
                     } else if (atc == Double.class) {
                         Double val = new Double(rs.getDouble(name));
                         if (val!=null && isXLabel) {
