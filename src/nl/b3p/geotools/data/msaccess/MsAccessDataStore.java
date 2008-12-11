@@ -74,6 +74,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         try {
             conn = DriverManager.getConnection(myDB, "yuit", "tyuityu");
         } catch (SQLException ex) {
+            log.error("Connectionstring: " + myDB);
             log.error("Connection not made!", ex);
             throw new IOException(ex.getLocalizedMessage());
         }

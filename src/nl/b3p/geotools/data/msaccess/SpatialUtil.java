@@ -9,10 +9,10 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geotools.feature.AttributeType;
@@ -125,7 +125,7 @@ public class SpatialUtil {
             boolean controlerFilterReverse,
             Connection conn) throws SQLException {
 
-        Map controlerMap = new HashMap();
+        Map controlerMap = new TreeMap();
         StringBuffer q = new StringBuffer("select ");
         q.append(controlerColumnName);
         if (controlerColumnType != null) {
@@ -175,7 +175,7 @@ public class SpatialUtil {
             Iterator it = controlerMap.keySet().iterator();
             while (it.hasNext()) {
                 String tableName = (String) it.next();
-                log.info("table name:  " + tableName);
+                log.debug("table name:  " + tableName);
             }
         }
 
