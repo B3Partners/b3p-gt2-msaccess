@@ -10,11 +10,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.geotools.data.DataStore;
 import org.geotools.data.FeatureSource;
-import org.geotools.feature.Feature;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.feature.FeatureType;
 import org.geotools.util.logging.Logging;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 
 /**
  *
@@ -78,11 +79,9 @@ public class Client {
         }
 
         String[] typeNames2Read = dataStore2Read.getTypeNames();
-//        for (int j = 0; j < typeNames2Read.length; j++) {
         for (int j = 0; j < 5; j++) {
             String typeName2Read = typeNames2Read[j];
             log.info("Reading: " + typeName2Read);
-
 
             FeatureSource features2Read = dataStore2Read.getFeatureSource(typeName2Read);
             FeatureCollection fc = features2Read.getFeatures();
@@ -90,14 +89,14 @@ public class Client {
             int loop=0;
             FeatureIterator fit = fc.features();
             while (fit.hasNext()) {
-                Feature f = fit.next();
+                SimpleFeature f = (SimpleFeature)fit.next();
                 loop++;
 
-                log.info("feature " + f.getID());
-                FeatureType ft = f.getFeatureType();
-                int nua = f.getNumberOfAttributes();
-                for (int k=0; k<nua; k++) {
-                    log.info(ft.getAttributeType(k).getName() + ": "+ f.getAttribute(k));
+                log.info("feature " + f.getIdentifier().getID());
+                SimpleFeatureType ft = (SimpleFeatureType)f.getType();
+
+                for(AttributeDescriptor descriptor : ft.getAttributeDescriptors()){
+                    log.info(descriptor.getName().getLocalPart() + ": "+ f.getAttribute(descriptor.getName()));
                 }
             }
             log.info("number of features: " + loop);

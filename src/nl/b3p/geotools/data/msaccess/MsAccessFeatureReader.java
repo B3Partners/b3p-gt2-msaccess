@@ -17,14 +17,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import org.geotools.data.FeatureReader;
-import org.geotools.feature.Feature;
-import org.geotools.feature.FeatureType;
 import org.geotools.feature.IllegalAttributeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geotools.feature.AttributeType;
-import org.geotools.feature.GeometryAttributeType;
+
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.referencing.NamedIdentifier;
+import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.AttributeType;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
@@ -33,22 +37,23 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 public class MsAccessFeatureReader implements FeatureReader {
 
     private static final Log log = LogFactory.getLog(MsAccessFeatureReader.class);
-    private FeatureType ft;
+    private SimpleFeatureType ft;
     private Connection conn;
     private ResultSet rs;
     private PreparedStatement statement;
     private GeometryFactory geometryFactory;
     private String[] xLabels;
     private String[] yLabels;
+    private int featureCount;
     public static final PrecisionModel precisionModel = new PrecisionModel(PrecisionModel.FLOATING);
 
-    public MsAccessFeatureReader(FeatureType ft, String[] xLabels, String[] yLabels, Connection dbConn) throws IOException {
+    public MsAccessFeatureReader(SimpleFeatureType ft, String[] xLabels, String[] yLabels, Connection dbConn) throws IOException {
         this.conn = dbConn;
         this.ft = ft;
         this.xLabels = xLabels;
         this.yLabels = yLabels;
-        GeometryAttributeType gat = ft.getDefaultGeometry();
-        CoordinateReferenceSystem crs = gat.getCoordinateSystem();
+
+        CoordinateReferenceSystem crs = ft.getGeometryDescriptor().getCoordinateReferenceSystem();
         int SRID = -1;
         if (crs != null) {
             try {
@@ -74,12 +79,11 @@ public class MsAccessFeatureReader implements FeatureReader {
     }
 
     public FeatureType getFeatureType() {
-        return ft;
+        return (FeatureType)ft;
     }
 
     public Feature next() throws IOException, IllegalAttributeException, NoSuchElementException {
         List foa = new ArrayList();
-        int ac = ft.getAttributeCount();
 
         int xls = xLabels.length;
         int yls = yLabels.length;
@@ -87,9 +91,10 @@ public class MsAccessFeatureReader implements FeatureReader {
         double y = 0.0;
         int addIndex = -1; // geom moet hier ingevoegd worden
 
-        for (int i = 0; i < ac; i++) {
-            AttributeType at = ft.getAttributeType(i);
-            String name = at.getName();
+        //for (int i = 0; i < ac; i++) {
+        int i = 0;
+        for(AttributeDescriptor attributeDescriptor : ft.getAttributeDescriptors()){
+            String name = attributeDescriptor.getName().getLocalPart();
 
             boolean isXLabel = false;
             boolean isYLabel = false;
@@ -111,7 +116,7 @@ public class MsAccessFeatureReader implements FeatureReader {
             if ("the_geom".equalsIgnoreCase(name)) {
                 addIndex = i;
             } else {
-                Class atc = at.getType();
+                Class atc = attributeDescriptor.getType().getBinding();
                 try {
                     if (atc == Long.class) {
                         foa.add(new Long(rs.getLong(name)));
@@ -138,14 +143,15 @@ public class MsAccessFeatureReader implements FeatureReader {
                     throw new NoSuchElementException(ex.getMessage());
                 }
             }
+            i++;
         }
 
         if (addIndex >= 0) {
             foa.add(addIndex, geometryFactory.createPoint(new Coordinate(x, y)));
         }
 
-        Feature f = ft.create(foa.toArray());
-        return f;
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(ft);
+        return (Feature)fb.build(ft, foa, Integer.toString(featureCount++));
     }
 
     public boolean hasNext() throws IOException {

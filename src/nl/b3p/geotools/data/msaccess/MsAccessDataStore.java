@@ -14,7 +14,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geotools.data.AbstractFileDataStore;
 import org.geotools.data.FeatureReader;
-import org.geotools.feature.FeatureType;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
+
 
 /**
  * DataStore for reading a DXF file produced by Autodesk.
@@ -96,7 +98,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
     }
 
     public MsAccessDataStore(Map dbconfig) throws IOException {
-        this(new URL((String) dbconfig.get(MsAccessDataStoreFactory.PARAM_URL.key)));
+        this((URL)dbconfig.get(MsAccessDataStoreFactory.PARAM_URL.key));
         controlerTable = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_TABLE.key);
         controlerColumnName = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_COLUMN_NAME.key);
         controlerColumnType = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_COLUMN_TYPE.key);
@@ -124,9 +126,9 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         }
     }
 
-    public FeatureType getSchema(String typeName) throws IOException {
+    public SimpleFeatureType getSchema(String typeName) throws IOException {
         if (featureTypeMap.containsKey(typeName)) {
-            return (FeatureType) featureTypeMap.get(typeName);
+            return (SimpleFeatureType) featureTypeMap.get(typeName);
         }
         try {
             // TODO raar dat dit nodig is
@@ -134,7 +136,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
                 dbConn = getConnection();
             }
 
-            FeatureType ft = SpatialUtil.createFeatureType(typeName, epsg, dbConn);
+            SimpleFeatureType ft = SpatialUtil.createFeatureType(typeName, epsg, dbConn);
             featureTypeMap.put(typeName, ft);
             return ft;
         } catch (Exception ex) {
@@ -142,7 +144,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         }
     }
 
-    public FeatureType getSchema() throws IOException {
+    public SimpleFeatureType getSchema() throws IOException {
         return null;
     }
 

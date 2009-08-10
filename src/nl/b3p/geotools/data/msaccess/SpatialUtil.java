@@ -15,45 +15,55 @@ import java.util.Map;
 import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geotools.feature.AttributeType;
-import org.geotools.feature.AttributeTypeFactory;
-import org.geotools.feature.FeatureType;
-import org.geotools.feature.FeatureTypes;
-import org.geotools.feature.type.GeometricAttributeType;
+
+
+import org.geotools.feature.AttributeTypeBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.referencing.CRS;
+import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class SpatialUtil {
 
     private static final Log log = LogFactory.getLog(SpatialUtil.class);
 
-    static public AttributeType createAttributeType(String label, int sqlType) {
-        AttributeType at = null;
+    static public AttributeDescriptor createAttributeType(String label, int sqlType) {
+        AttributeDescriptor at = null;
+        AttributeTypeBuilder attributeTypeBuilder = new AttributeTypeBuilder();
+        attributeTypeBuilder.setName(label);
+
         if (sqlType == java.sql.Types.BIGINT ||
                 sqlType == java.sql.Types.INTEGER ||
                 sqlType == java.sql.Types.SMALLINT ||
                 sqlType == java.sql.Types.TINYINT) {
-            at = AttributeTypeFactory.newAttributeType(label, Long.class);
+            attributeTypeBuilder.setBinding(Long.class);
+
         } else if (sqlType == java.sql.Types.DATE ||
                 sqlType == java.sql.Types.TIME ||
                 sqlType == java.sql.Types.TIMESTAMP) {
-            at = AttributeTypeFactory.newAttributeType(label, Timestamp.class);
+            attributeTypeBuilder.setBinding(Timestamp.class);
+
         } else if (sqlType == java.sql.Types.DECIMAL ||
                 sqlType == java.sql.Types.DOUBLE ||
                 sqlType == java.sql.Types.FLOAT ||
                 sqlType == java.sql.Types.REAL ||
                 sqlType == java.sql.Types.NUMERIC) {
-            at = AttributeTypeFactory.newAttributeType(label, Double.class);
+            attributeTypeBuilder.setBinding(Double.class);
+
         } else if (sqlType == java.sql.Types.CHAR ||
                 sqlType == java.sql.Types.CLOB ||
                 sqlType == java.sql.Types.LONGVARCHAR ||
                 sqlType == java.sql.Types.VARCHAR) {
-            at = AttributeTypeFactory.newAttributeType(label, String.class);
+            attributeTypeBuilder.setBinding(String.class);
+
         } else if (sqlType == java.sql.Types.OTHER ||
                 sqlType == java.sql.Types.BLOB) {
-            at = AttributeTypeFactory.newAttributeType(label, Object.class);
+            attributeTypeBuilder.setBinding(Object.class);
         }
-        return at;
+
+
+        return attributeTypeBuilder.buildDescriptor(label);
     }
 
     static public List getAttributeTypes(String typeName, Connection conn) throws Exception {
@@ -63,32 +73,41 @@ public class SpatialUtil {
             return null;
         }
         ResultSet rs = dbmd.getColumns(null, null, typeName, null);
-        List AttributeTypes = null;
+        List attributeTypes = null;
         while (rs.next()) {
-            if (AttributeTypes == null) {
-                AttributeTypes = new ArrayList();
+            if (attributeTypes == null) {
+                attributeTypes = new ArrayList();
             }
             String columnName = rs.getString("COLUMN_NAME");
             int sqlType = rs.getInt("DATA_TYPE");
-            AttributeTypes.add(createAttributeType(columnName, sqlType));
+            attributeTypes.add(createAttributeType(columnName, sqlType));
         }
-        return AttributeTypes;
+        return attributeTypes;
     }
 
-    static public FeatureType createFeatureType(String typeName, String epsg, Connection conn) throws Exception {
+    static public SimpleFeatureType createFeatureType(String typeName, String epsg, Connection conn) throws Exception {
 
         List ats = getAttributeTypes(typeName, conn);
         if (ats == null || ats.isEmpty()) {
             return null;
         }
         CoordinateReferenceSystem crs = CRS.decode(epsg);
-        GeometricAttributeType geometryType = new GeometricAttributeType("the_geom", Geometry.class, true, null, crs, null);
-        ats.add(geometryType);
 
-        AttributeType[] ata = (AttributeType[]) ats.toArray(new AttributeType[ats.size()]);
-        FeatureType ft = FeatureTypes.newFeatureType(ata, typeName);
+        AttributeTypeBuilder atb = new AttributeTypeBuilder();
+        atb.setName("the_geom");
+        atb.setCRS(crs);
+        atb.setBinding(Geometry.class);
+        atb.setNillable(true);
 
-        return ft;
+        ats.add(atb.buildDescriptor("the_geom"));
+
+        AttributeDescriptor[] attributes = (AttributeDescriptor[]) ats.toArray(new AttributeDescriptor[ats.size()]);
+
+        SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
+        ftb.setName(typeName);
+        ftb.setAttributes(attributes);
+
+        return ftb.buildFeatureType();
     }
 
     static public List getTableNames(Connection conn) throws SQLException {

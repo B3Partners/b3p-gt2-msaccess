@@ -15,7 +15,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFactorySpi;
-import org.geotools.data.DataStoreFactorySpi.Param;
 import org.geotools.data.FileDataStoreFactorySpi;
 
 /**
@@ -105,7 +104,8 @@ public class MsAccessDataStoreFactory implements FileDataStoreFactorySpi {
         if(!canProcess(params)) {
             throw new FileNotFoundException( "MS Access database not found: " + params);
         }
-        return new MsAccessDataStore((URL)params.get(PARAM_URL.key));
+        //return new MsAccessDataStore((URL)params.get(PARAM_URL.key));
+        return new MsAccessDataStore(params);
     }
 
     public DataStore createNewDataStore(Map params) throws IOException {
