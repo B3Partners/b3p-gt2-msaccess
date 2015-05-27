@@ -3,8 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.b3p</groupId>
     <artifactId>b3p-gt2-msaccess</artifactId>
-    <version>4.2-SNAPSHOT</version>
+    <version>4.2.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+    
+    <properties>
+        <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
+        <geotools.version>10.4</geotools.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>
@@ -14,7 +20,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>10.4</version>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>
@@ -36,9 +42,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-    <properties>
-        <project.build.sourceEncoding>windows-1252</project.build.sourceEncoding>
-    </properties>    
     <repositories>
         <repository>
             <id>osgeo</id>
