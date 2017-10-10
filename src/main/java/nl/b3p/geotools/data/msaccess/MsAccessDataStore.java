@@ -4,34 +4,40 @@
 package nl.b3p.geotools.data.msaccess;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.geotools.data.AbstractFileDataStore;
+import org.geotools.data.DefaultServiceInfo;
 import org.geotools.data.FeatureReader;
+import org.geotools.data.FeatureWriter;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.LockingManager;
+import org.geotools.data.Query;
+import org.geotools.data.ServiceInfo;
+import org.geotools.data.Transaction;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
-
+import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 
 /**
  * DataStore for reading a DXF file produced by Autodesk.
- * 
- * The attributes are always the same:
- * key: String
- * name: String
- * urlLink: String
- * entryLineNumber: Integer
- * parseError: Boolean
- * error: String
- *  * 
+ *
+ * The attributes are always the same: key: String name: String urlLink: String
+ * entryLineNumber: Integer parseError: Boolean error: String
+ *
  * @author Chris van Lith B3Partners
+ * @author mprins
  */
-public class MsAccessDataStore extends AbstractFileDataStore {
+public class MsAccessDataStore implements FileDataStore {
 
     private static final Log log = LogFactory.getLog(MsAccessDataStore.class);
     private URL url;
@@ -44,7 +50,7 @@ public class MsAccessDataStore extends AbstractFileDataStore {
     private String epsg = null;
     private String[] xLabels = null;
     private String[] yLabels = null;
-    ;
+
     private Map featureReaderMap = new HashMap();
     private Map featureTypeMap = new HashMap();
 
@@ -86,19 +92,16 @@ public class MsAccessDataStore extends AbstractFileDataStore {
 //        String sConnect = new String("jdbc:itrackx://192.233.0.3/,");
 //        Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
 //        conn = DriverManager.getConnection(sConnect, p);
-        
-        
 //Problem: The account that is being used to access the page does not have access 
 //        to the HKEY_LOCAL_MACHINE\SOFTWARE\ODBC registry key.
 //
 //Solution:
 //http://support.microsoft.com/default.aspx?scid=kb;EN-US;Q295297
-
         return conn;
     }
 
     public MsAccessDataStore(Map dbconfig) throws IOException {
-        this((URL)dbconfig.get(MsAccessDataStoreFactory.PARAM_URL.key));
+        this((URL) dbconfig.get(MsAccessDataStoreFactory.PARAM_URL.key));
         controlerTable = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_TABLE.key);
         controlerColumnName = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_COLUMN_NAME.key);
         controlerColumnType = (String) dbconfig.get(MsAccessDataStoreFactory.PARAM_CONTROLER_COLUMN_TYPE.key);
@@ -144,8 +147,19 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         }
     }
 
+    @Override
+    public SimpleFeatureType getSchema(Name name) throws IOException {
+        return getSchema(name.getLocalPart());
+    }
+
+    @Override
     public SimpleFeatureType getSchema() throws IOException {
         return null;
+    }
+
+    @Override
+    public List<Name> getNames() throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public FeatureReader getFeatureReader(String typeName) throws IOException {
@@ -161,7 +175,116 @@ public class MsAccessDataStore extends AbstractFileDataStore {
         }
     }
 
+    @Override
     public FeatureReader getFeatureReader() throws IOException {
         return null;
+    }
+
+    @Override
+    public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(Query query, Transaction t) throws IOException {
+        return getFeatureReader(query.getTypeName());
+    }
+
+    @Override
+    public SimpleFeatureSource getFeatureSource() throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public SimpleFeatureSource getFeatureSource(String string) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public SimpleFeatureSource getFeatureSource(Name name) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void createSchema(SimpleFeatureType t) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateSchema(Name name, SimpleFeatureType t) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateSchema(SimpleFeatureType sft) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateSchema(String string, SimpleFeatureType sft) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSchema(String string) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSchema(Name name) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(Filter filter, Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriterAppend(Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String string, Filter filter, Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String string, Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriterAppend(String string, Transaction t) throws IOException {
+        throw new UnsupportedOperationException("Functie niet ondersteund voor alleen-lezen databron.");
+    }
+
+    @Override
+    public LockingManager getLockingManager() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+    }
+
+    @Override
+    public ServiceInfo getInfo() {
+        DefaultServiceInfo serviceInfo = new DefaultServiceInfo();
+        serviceInfo.setTitle("MSAccess DataStore");
+        try {
+            serviceInfo.setSource(this.url.toURI());
+        } catch (URISyntaxException ex) {
+
+        }
+        return serviceInfo;
+    }
+
+    @Override
+    public void dispose() {
+        try {
+            this.dbConn.close();
+        } catch (SQLException ex) {
+            // ignore
+        }
+        this.dbConn = null;
     }
 }
