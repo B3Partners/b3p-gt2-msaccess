@@ -263,7 +263,6 @@ public class MsAccessDataStore implements FileDataStore {
     @Override
     public LockingManager getLockingManager() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-
     }
 
     @Override
@@ -282,8 +281,8 @@ public class MsAccessDataStore implements FileDataStore {
     public void dispose() {
         try {
             this.dbConn.close();
-        } catch (SQLException ex) {
-            // ignore
+        } catch (SQLException | NullPointerException ex) {
+            log.debug("Mogelijk probleem met sluiten van DB verbinding", ex);
         }
         this.dbConn = null;
     }
