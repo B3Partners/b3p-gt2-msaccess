@@ -3,9 +3,9 @@
  */
 package nl.b3p.geotools.data.msaccess;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
